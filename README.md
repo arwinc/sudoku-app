@@ -16,6 +16,7 @@ The solution (`Sudoku.slnx`) contains two projects:
 * **`Board.cs` & `Cell.cs`**: Domain model for the 9x9 grid. Each `Cell` tracks row/column indices, solution digit (`Value`), pre-filled clue status (`IsFixed`), and player entry (`UserValue`). `Board` handles duplicate validation across rows, columns, and 3x3 subgrids.
 * **`SudokuGenerator.cs`**: Generates full valid Sudoku grids by populating diagonal 3x3 subgrids first, recursively solving remaining cells via backtracking (`FillRemaining`), and selecting pre-filled clue positions.
 * **`SudokuCommandParser.cs`**: Uses regular expressions to parse CLI commands into strongly typed `SudokuCommand` records (`PlaceValue`, `Clear`, `Hint`, `Check`, `Quit`, `Invalid`).
+* **`PuzzleGenerator.cs`**: Original code to generate full valid Sudoku grids row-by-row using row backtracking, but is non-deterministic.
 * **`BoardRenderer.cs`**: ASCII console renderer displaying a formatted 9x9 grid with ANSI color formatting for user-entered digits.
 
 ### Unit Test Project (`SudokuApp.Tests`)
@@ -23,8 +24,27 @@ The solution (`Sudoku.slnx`) contains two projects:
 * **`BoardTests.cs`**: Tests value placement rules, violation detection for rows, columns, and subgrids (`CheckCell`), board-wide validation (`CheckBoard`), and completion detection (`IsSolved`).
 * **`SudokuGameTests.cs`**: Tests hint retrieval logic (`GetHintCell`), cell command processing (`ProcessCellCommand`), and board violation reporting.
 * **`SudokuGeneratorTests.cs`**: Verifies generation constraints (81 cells total, exactly 30 pre-filled fixed cells), solution validity across all rows/cols/boxes, and reproducibility via random seed initialization.
+* **`PuzzleGeneratorTests.cs`**: Verifies generation of the original `PuzzleGenerator` code.
 * **`SudokuCommandParserTests.cs`**: Validates parsing for `quit`, `hint`, `check`, coordinate conversion (e.g., `B3 7` -> row 1, col 2, value 7), `clear`, and malformed/invalid inputs.
 * **`BoardRendererTests.cs`**: Validates ASCII board header and row output, user-entry ANSI formatting, and blank cell rendering (`_`).
+
+---
+
+## Alternative Puzzle generator strategy
+
+Modify code inside `Program.cs` to switch puzzle generator.
+
+Before:
+
+```csharp
+IPuzzleGenerator puzzleGenerator = new SudokuGenerator();
+```
+
+After:
+
+```csharp
+IPuzzleGenerator puzzleGenerator = new PuzzleGenerator();
+```
 
 ---
 

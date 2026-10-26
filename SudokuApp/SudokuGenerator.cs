@@ -2,7 +2,7 @@
  * Source: https://www.geeksforgeeks.org/dsa/program-sudoku-generator/
 */
 
-public class SudokuGenerator
+public class SudokuGenerator : IPuzzleGenerator
 {
   private const int BOX_SIZE = 3;
   private const int PRE_FILLED_CELL_COUNT = 30;

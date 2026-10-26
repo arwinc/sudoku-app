@@ -1,5 +1,5 @@
 ﻿SudokuGame game;
-SudokuGenerator puzzleGenerator = new SudokuGenerator();
+IPuzzleGenerator puzzleGenerator = new SudokuGenerator();
 SudokuCommandParser commandParser = new();
 BoardRenderer boardRenderer = new();
 
