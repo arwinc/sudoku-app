@@ -52,24 +52,14 @@ public class Board
 
   private bool IsInSameSubgrid(int row, int col, int value)
   {
-    int[] rows = (row % 3) switch
-    {
-      0 => [row, row + 1, row + 2],
-      1 => [row - 1, row, row + 1],
-      _ => [row - 2, row - 1, row],
-    };
-
-    int[] cols = (col % 3) switch
-    {
-      0 => [col, col + 1, col + 2],
-      1 => [col - 1, col, col + 1],
-      _ => [col - 2, col - 1, col],
-    };
+    int boxSize = (int) Math.Sqrt(Board.Size);
+    int startRow = (row / boxSize) * boxSize;
+    int startCol = (col / boxSize) * boxSize;
 
     return Cells
       .Where(x => x.RowIndex != row && x.ColumnIndex != col)
-      .Any(x => rows.Contains(x.RowIndex)
-        && cols.Contains(x.ColumnIndex)
+      .Any(x => x.RowIndex >= startRow && x.RowIndex < startRow + boxSize
+        && x.ColumnIndex >= startCol && x.ColumnIndex < startCol + boxSize
         && x.HasCurrentValueOf(value));
   }
 
