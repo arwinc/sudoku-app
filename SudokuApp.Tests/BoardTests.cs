@@ -68,7 +68,7 @@ public class BoardTests
   {
     var first = new Cell(0, 0, 4, false);
     var second = new Cell(1, 1, 9, false);
-    var board = new Board(new[] { first, second });
+    var board = CreateTestBoard9x9(first, second);
 
     Assert.True(board.TryPlaceValue(first, 7));
     Assert.True(board.TryPlaceValue(second, 7));
@@ -127,5 +127,19 @@ public class BoardTests
     Assert.True(board.TryPlaceValue(third, 7));
 
     Assert.Null(board.CheckBoard());
+  }
+
+  private static Board CreateTestBoard9x9(params Cell[] customCells)
+  {
+    var cells = new List<Cell>();
+    for (int r = 0; r < 9; r++)
+    {
+      for (int c = 0; c < 9; c++)
+      {
+        var custom = customCells.FirstOrDefault(x => x.RowIndex == r && x.ColumnIndex == c);
+        cells.Add(custom ?? new Cell(r, c, 0, isFixed: false));
+      }
+    }
+    return new Board(cells);
   }
 }

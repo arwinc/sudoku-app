@@ -78,7 +78,7 @@ public class PuzzleGeneratorTests
     {
 
       var board = new PuzzleGenerator(random).Generate();
-      int[] expectedValues = Enumerable.Range(1, Board.Size).ToArray();
+      int[] expectedValues = Enumerable.Range(1, 9).ToArray();
 
       foreach (var row in board.Cells.GroupBy(cell => cell.RowIndex))
       {
@@ -90,9 +90,9 @@ public class PuzzleGeneratorTests
         Assert.Equal(expectedValues, column.Select(cell => cell.Value).Order().ToArray());
       }
 
-      for (int boxRow = 0; boxRow < Board.Size; boxRow += 3)
+      for (int boxRow = 0; boxRow < 9; boxRow += 3)
       {
-        for (int boxColumn = 0; boxColumn < Board.Size; boxColumn += 3)
+        for (int boxColumn = 0; boxColumn < 9; boxColumn += 3)
         {
           int[] boxValues = board.Cells
             .Where(cell => cell.RowIndex >= boxRow && cell.RowIndex < boxRow + 3
