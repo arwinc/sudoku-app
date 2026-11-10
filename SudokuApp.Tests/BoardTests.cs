@@ -6,7 +6,7 @@ public class BoardTests
   public void TryPlaceValue_AllowsValidPlacement()
   {
     var cell = new Cell(0, 0, 5, false);
-    var board = new Board(new[] { cell });
+    var board = CreateTestBoard9x9(cell);
 
     var result = board.TryPlaceValue(cell, 7);
 
@@ -18,7 +18,7 @@ public class BoardTests
   public void TryPlaceValue_RejectsFixedCell()
   {
     var cell = new Cell(0, 0, 5, true);
-    var board = new Board(new[] { cell });
+    var board = CreateTestBoard9x9(cell);
 
     var result = board.TryPlaceValue(cell, 8);
 
@@ -42,7 +42,7 @@ public class BoardTests
   {
     var first = new Cell(0, 0, 4, false);
     var second = new Cell(0, 1, 9, false);
-    var board = new Board(new[] { first, second });
+    var board = CreateTestBoard9x9(first, second);
 
     Assert.True(board.TryPlaceValue(first, 7));
     Assert.True(board.TryPlaceValue(second, 7));
@@ -55,7 +55,7 @@ public class BoardTests
   {
     var first = new Cell(0, 0, 4, false);
     var second = new Cell(1, 0, 9, false);
-    var board = new Board(new[] { first, second });
+    var board = CreateTestBoard9x9(first, second);
 
     Assert.True(board.TryPlaceValue(first, 7));
     Assert.True(board.TryPlaceValue(second, 7));
@@ -82,7 +82,7 @@ public class BoardTests
     var first = new Cell(0, 0, 5, false);
     var second = new Cell(0, 1, 9, false);
     var third = new Cell(1, 0, 7, false);
-    var board = new Board(new[] { first, second, third });
+    var board = CreateTestBoard9x9(first, second, third);
 
     Assert.True(board.TryPlaceValue(first, 5));
     Assert.True(board.TryPlaceValue(second, 5));
@@ -120,7 +120,7 @@ public class BoardTests
     var first = new Cell(0, 0, 5, false);
     var second = new Cell(0, 1, 6, false);
     var third = new Cell(1, 0, 7, false);
-    var board = new Board(new[] { first, second, third });
+    var board = CreateTestBoard9x9(first, second, third);
 
     Assert.True(board.TryPlaceValue(first, 5));
     Assert.True(board.TryPlaceValue(second, 6));
@@ -129,7 +129,7 @@ public class BoardTests
     Assert.Null(board.CheckBoard());
   }
 
-  private static Board CreateTestBoard9x9(params Cell[] customCells)
+  public static Board CreateTestBoard9x9(params Cell[] customCells)
   {
     var cells = new List<Cell>();
     for (int r = 0; r < 9; r++)

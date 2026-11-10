@@ -8,13 +8,17 @@ public enum ViolationCheck
 
 public class Board
 {
-  public const int Size = 9;
+  public int Size { get; }
+
+  public int BoxSize { get; }
 
   public IReadOnlyList<Cell> Cells { get; }
 
   public Board(IEnumerable<Cell> cells)
   {
     Cells = cells.ToList();
+    Size = (int)Math.Sqrt(cells.Count());
+    BoxSize = (int)Math.Sqrt(Size);
   }
 
   public Cell? GetCell(int row, int col) =>
@@ -23,7 +27,7 @@ public class Board
   public bool TryPlaceValue(Cell cell, int value)
   {
     if (cell is null || cell.IsFixed) return false;
-    if (value is < 1 or > 9) return false;
+    if (value is < 1 || value > Size) return false;
     return cell.TrySetUserValue(value);
   }
 
@@ -52,14 +56,13 @@ public class Board
 
   private bool IsInSameSubgrid(int row, int col, int value)
   {
-    int boxSize = (int) Math.Sqrt(Board.Size);
-    int startRow = (row / boxSize) * boxSize;
-    int startCol = (col / boxSize) * boxSize;
+    int startRow = (row / BoxSize) * BoxSize;
+    int startCol = (col / BoxSize) * BoxSize;
 
     return Cells
       .Where(x => !(x.RowIndex == row && x.ColumnIndex == col))
-      .Any(x => x.RowIndex >= startRow && x.RowIndex < startRow + boxSize
-        && x.ColumnIndex >= startCol && x.ColumnIndex < startCol + boxSize
+      .Any(x => x.RowIndex >= startRow && x.RowIndex < startRow + BoxSize
+        && x.ColumnIndex >= startCol && x.ColumnIndex < startCol + BoxSize
         && x.HasCurrentValueOf(value));
   }
 

@@ -7,16 +7,23 @@ public interface IPuzzleGenerator
 
 public class PuzzleGenerator : IPuzzleGenerator
 {
-  private const int BOX_SIZE = 3;
-  private const int PRE_FILLED_CELL_COUNT = 30;
+  private readonly int _boardSize;
+  private readonly int _boxSize;
+  private readonly int _preFilledCellCount;
+
   private const int MAX_ROW_ATTEMPTS = 5;
   private readonly List<int[]> generatedNumbers = [];
   private readonly Random _random;
 
-  public PuzzleGenerator(Random? random = null)
+  public PuzzleGenerator(int boardSize = 9, int? preFilledCellCount = null, Random? random = null)
   {
+    _boardSize = boardSize;
+    _boxSize = (int)Math.Sqrt(boardSize);
+    _preFilledCellCount = preFilledCellCount ?? (boardSize == 4 ? 7 : 30);
     _random = random ?? Random.Shared;
   }
+
+  public PuzzleGenerator(Random? random) : this(9, 30, random) {}
 
   public Board Generate()
   {
@@ -26,7 +33,7 @@ public class PuzzleGenerator : IPuzzleGenerator
     int row = 0;
 
     // Loop until all 9 rows are successfully generated
-    while (row < Board.Size)
+    while (row < _boardSize)
     {
       (int[]? shuffledRow, bool success, int attempts) = TryGenerateRow(row);
 
@@ -61,7 +68,7 @@ public class PuzzleGenerator : IPuzzleGenerator
 
     List<Cell> cells = [..generatedNumbers
       .SelectMany((usedValue, rowIndex) => usedValue.Select((value, colIndex) => {
-        int position = rowIndex * Board.Size + colIndex;
+        int position = rowIndex * _boardSize + colIndex;
         bool isFixed = fixedPositions.Contains(position);
         return new Cell(rowIndex, colIndex, value, isFixed);
       }
@@ -70,34 +77,35 @@ public class PuzzleGenerator : IPuzzleGenerator
     return new Board(cells);
   }
 
-  private static HashSet<int> GetRandomFixedPositions(Random random)
+  private HashSet<int> GetRandomFixedPositions(Random random)
   {
-    int[] positions = Enumerable.Range(0, Board.Size * Board.Size).ToArray();
-    for (int i = 0; i < PRE_FILLED_CELL_COUNT; i++)
+    int totalCells = _boardSize * _boardSize;
+    int[] positions = Enumerable.Range(0, totalCells).ToArray();
+    for (int i = 0; i < _preFilledCellCount; i++)
     {
       int selected = random.Next(i, positions.Length);
       (positions[i], positions[selected]) = (positions[selected], positions[i]);
     }
 
-    return positions.Take(PRE_FILLED_CELL_COUNT).ToHashSet();
+    return positions.Take(_preFilledCellCount).ToHashSet();
   }
 
   private (int[]?, bool, int) TryGenerateRow(int row)
   {
     int attempts = 0;
-    List<int> availableNumbers = new(Board.Size);
+    List<int> availableNumbers = new(_boardSize);
 
     while (attempts < MAX_ROW_ATTEMPTS)
     {
       attempts++;
-      int[] currentRow = new int[Board.Size];
+      int[] currentRow = new int[_boardSize];
       bool rowComplete = true;
 
-      for (int col = 0; col < Board.Size; col++)
+      for (int col = 0; col < _boardSize; col++)
       {
         // Collect valid numbers for cell (row, col)
         availableNumbers.Clear();
-        for (int num = 1; num <= Board.Size; num++)
+        for (int num = 1; num <= _boardSize; num++)
         {
           if (IsValid(row, col, num, currentRow))
           {
@@ -142,12 +150,12 @@ public class PuzzleGenerator : IPuzzleGenerator
     }
 
     // 3. Check 3x3 subgrid in previous rows
-    int boxStartRow = (row / BOX_SIZE) * BOX_SIZE;
-    int boxStartCol = (col / BOX_SIZE) * BOX_SIZE;
+    int boxStartRow = (row / _boxSize) * _boxSize;
+    int boxStartCol = (col / _boxSize) * _boxSize;
 
     for (int r = boxStartRow; r < row; r++)
     {
-      for (int c = boxStartCol; c < boxStartCol + BOX_SIZE; c++)
+      for (int c = boxStartCol; c < boxStartCol + _boxSize; c++)
       {
         if (generatedNumbers[r][c] == num) return false;
       }
