@@ -22,7 +22,7 @@ if (!int.TryParse(rawNumber, out int maxCount))
 
 Type? type = AppDomain.CurrentDomain.GetAssemblies()
     .SelectMany(a => a.GetTypes())
-    .FirstOrDefault(t => t.Name.Equals(targetClassName, StringComparison.OrdinalIgnoreCase));
+    .FirstOrDefault(t => t.FullName!.Equals(targetClassName, StringComparison.OrdinalIgnoreCase));
 if (type is null)
 {
   Console.WriteLine($"Cannot find a class named '{targetClassName}'");
