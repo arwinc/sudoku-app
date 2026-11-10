@@ -57,7 +57,7 @@ public class Board
     int startCol = (col / boxSize) * boxSize;
 
     return Cells
-      .Where(x => x.RowIndex != row && x.ColumnIndex != col)
+      .Where(x => !(x.RowIndex == row && x.ColumnIndex == col))
       .Any(x => x.RowIndex >= startRow && x.RowIndex < startRow + boxSize
         && x.ColumnIndex >= startCol && x.ColumnIndex < startCol + boxSize
         && x.HasCurrentValueOf(value));
