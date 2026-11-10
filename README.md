@@ -105,12 +105,27 @@ dotnet test
 | `check` | `check` | Scans the board and reports the **first rule violation found** (evaluates all user entries in grid order, not just the most recent move). |
 | `quit` | `quit` | Exits the game. |
 
+The game now supports 4x4 grid. When starting the game, you will be asked to select grid size.
+
+```bash
+Welcome to Sudoku
+Select grid size — 4 (4x4) or 9 (9x9) [Default: 9]:
+```
+
+You can also restart anytime using `new` command.
+
+| Command Pattern | Example | Description |
+| :--- | :--- | :--- |
+| `new [size]` | `new 4` `new 9` | Start new 4x4 or 9x9 game |
+| `new`  | `new` | Start new game using initial selected size. |
+
 ---
 
 ## Example Console Session
 
 ```text
 Welcome to Sudoku
+Select grid size — 4 (4x4) or 9 (9x9) [Default: 9]:
 
 Here is your puzzle:
     1 2 3 4 5 6 7 8 9

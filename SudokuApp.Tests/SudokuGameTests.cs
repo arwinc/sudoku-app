@@ -79,7 +79,7 @@ public class SudokuGameTests
   {
     var cell1 = new Cell(0, 0, 5, false);
     var cell2 = new Cell(1, 1, 6, false);
-    var game = new SudokuGame(new Board([cell1, cell2]));
+    var game = new SudokuGame(BoardTests.CreateTestBoard9x9(cell1, cell2));
 
     // Action : A1 1 » B2 2 » A1 3
     // History: A1 ø » B2 ø » A1 1

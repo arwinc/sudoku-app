@@ -8,25 +8,28 @@ public enum SudokuCommandType
   Check,
   PlaceValue,
   Undo,
-  Clear
+  Clear,
+  NewGame
 }
 
 public sealed record SudokuCommand(
   SudokuCommandType Type,
   int? RowIndex = null,
   int? ColumnIndex = null,
-  int? Value = null)
+  int? Value = null,
+  int? BoardSize = null)
 {
   public static SudokuCommand Create(
     SudokuCommandType type,
     Cell cell,
-    int? value = null
-  ) => new SudokuCommand(type, cell.RowIndex, cell.ColumnIndex, value);
+    int? value = null,
+    int? boardSize = null
+  ) => new SudokuCommand(type, cell.RowIndex, cell.ColumnIndex, value, boardSize);
 }
 
 public class SudokuCommandParser
 {
-  private static readonly Regex MovePattern = new(@"^([A-I])([1-9]) ([1-9]|clear)$");
+  public int BoardSize { get; set; } = 9;
 
   public SudokuCommand Parse(string? input)
   {
@@ -50,7 +53,22 @@ public class SudokuCommandParser
       return new SudokuCommand(SudokuCommandType.Undo);
     }
 
-    Match match = MovePattern.Match(input ?? string.Empty);
+    Match newGameMatch = Regex.Match(input ?? string.Empty, @"^new(?:\s([49]))?$", RegexOptions.IgnoreCase);
+    if (newGameMatch.Success)
+    {
+      string sizeGroup = newGameMatch.Groups[1].Value;
+      int? requestedSize = string.IsNullOrEmpty(sizeGroup) ? null : int.Parse(sizeGroup);
+      if (requestedSize.HasValue)
+      {
+        BoardSize = requestedSize.Value;
+      }
+      return new SudokuCommand(SudokuCommandType.NewGame, BoardSize: BoardSize);
+    }
+
+    char maxRowChar = (char)('A' + BoardSize - 1);
+    string movePattern = $@"^([A-{maxRowChar}])([1-{BoardSize}])\s+([1-{BoardSize}]|clear)$";
+
+    Match match = Regex.Match(input ?? string.Empty, movePattern, RegexOptions.IgnoreCase);
     if (!match.Success)
     {
       return new SudokuCommand(SudokuCommandType.Invalid);
