@@ -7,10 +7,6 @@ public class Cell : ICloneable
   public int? UserValue { get; private set; }
   public bool IsEditable => !IsFixed;
 
-  const string ROW_HEADINGS = "ABCDEFGHI";
-  const string COL_HEADINGS = "123456789";
-
-
   public Cell(int rowIndex, int columnIndex, int value, bool isFixed)
   {
     RowIndex = rowIndex;
@@ -34,8 +30,8 @@ public class Cell : ICloneable
     UserValue = null;
   }
 
-  public char RowLabel => ROW_HEADINGS[RowIndex];
-  public char ColLabel => COL_HEADINGS[ColumnIndex];
+  public char RowLabel => (char)('A' + RowIndex);
+  public char ColLabel => (char)('1' + ColumnIndex);
   public string Id => $"{RowLabel}{ColLabel}";
 
   public bool HasCurrentValueOf(int value) =>
