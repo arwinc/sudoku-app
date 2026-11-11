@@ -64,7 +64,7 @@ IPuzzleGenerator puzzleGenerator = new PuzzleGenerator();
    * Generation includes checks to ensure recursive backtracking (`FillRemaining`) completes successfully; if generation fails, an exception is thrown to guarantee broken grids containing zero-valued cells are never returned.
 2. **Uniqueness Guarantee**:
    * Clue selection is decoupled via the `IClueStrategy` interface: 
-      * `RandomClueStrategy`: Randomly selects fixed clues from a completed grid ([**does not guarantee a unique solution**](#example-of-non-unique-solution-in-4x4-board).
+      * `RandomClueStrategy`: Randomly selects fixed clues from a completed grid ([**does not guarantee a unique solution**](#example-of-non-unique-solution-in-4x4-board)).
       * `UniqueClueStrategy` *(Default)*: Solves uniqueness by restoring a clue whenever removing it leads to multiple valid completions.
 
 3. **Hint Rule**:
@@ -160,7 +160,7 @@ Current grid:
 
 The generator might generate multiple valid solutions when clues are randomly selected.
 
-```ps1
+```
 Solution:           Current board:
     𝟷  𝟸  𝟹  𝟺          𝟷  𝟸  𝟹  𝟺 
  A  4̳  1̳  𝟸  𝟹       A  4̳  1̳  𝟸  𝟹 
@@ -169,7 +169,7 @@ Solution:           Current board:
  D  𝟷  4̳  3̳  𝟸       D  𝟷  3̳  4̳  𝟸 
 ```
 
-The game only ends when it matches the solution.
+The game only ends when the board matches the solution.
 
 ```
 Enter command (e.g., A3 4, C5 clear, hint, check, quit):
