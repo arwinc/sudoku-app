@@ -29,7 +29,10 @@ if (type is null)
   return;
 }
 
-object? instance = Activator.CreateInstance(type, [Random.Shared]);
+var (boardSize, preFilledCellCount) = (9, 30);
+int boxSize = (int)Math.Sqrt(boardSize);
+
+object? instance = Activator.CreateInstance(type, [boardSize, preFilledCellCount, Random.Shared]);
 if (instance is IPuzzleGenerator puzzleGenerator)
 {
   Run(puzzleGenerator, maxCount);
@@ -49,9 +52,9 @@ void Run(IPuzzleGenerator puzzleGenerator, int maxCount)
 
 void Check(Board board)
 {
-  int[] expectedValues = Enumerable.Range(1, 9).ToArray();
+  int[] expectedValues = Enumerable.Range(1, boardSize).ToArray();
 
-  for (int row = 0; row < 9; row++)
+  for (int row = 0; row < boardSize; row++)
   {
     int[] rowValues = board.Cells
       .Where(cell => cell.RowIndex == row)
@@ -62,7 +65,7 @@ void Check(Board board)
     if (!expectedValues.SequenceEqual(rowValues)) throw new Exception("Duplicate in row");
   }
 
-  for (int column = 0; column < 9; column++)
+  for (int column = 0; column < boardSize; column++)
   {
     int[] columnValues = board.Cells
       .Where(cell => cell.ColumnIndex == column)
@@ -73,13 +76,13 @@ void Check(Board board)
     if (!expectedValues.SequenceEqual(columnValues)) throw new Exception("Duplicate in column");
   }
 
-  for (int boxRow = 0; boxRow < 9; boxRow += 3)
+  for (int boxRow = 0; boxRow < boardSize; boxRow += boxSize)
   {
-    for (int boxColumn = 0; boxColumn < 9; boxColumn += 3)
+    for (int boxColumn = 0; boxColumn < boardSize; boxColumn += boxSize)
     {
       int[] boxValues = board.Cells
-        .Where(cell => cell.RowIndex >= boxRow && cell.RowIndex < boxRow + 3
-          && cell.ColumnIndex >= boxColumn && cell.ColumnIndex < boxColumn + 3)
+        .Where(cell => cell.RowIndex >= boxRow && cell.RowIndex < boxRow + boxSize
+          && cell.ColumnIndex >= boxColumn && cell.ColumnIndex < boxColumn + boxSize)
         .Select(cell => cell.Value)
         .Order()
         .ToArray();
