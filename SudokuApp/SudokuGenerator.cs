@@ -194,38 +194,4 @@ public class SudokuGenerator : IPuzzleGenerator
 
     return grid;
   }
-
-  private int CountSolutions(int[,] grid, int count = 0)
-  {
-    for (int row = 0; row < _boardSize; row++)
-    {
-      for (int col = 0; col < _boardSize; col++)
-      {
-        if (grid[row, col] == 0)
-        {
-          for (int num = 1; num <= _boardSize; num++)
-          {
-            if (CheckIfSafe(grid, row, col, num))
-            {
-              grid[row, col] = num;
-              count = CountSolutions(grid, count);
-
-              // Reset to empty
-              grid[row, col] = 0;
-
-              // Has more than 1 solution
-              if (count > 1)
-              {
-                return count;
-              }
-            }
-          }
-          return count;
-        }
-      }
-    }
-
-    // Reached the end of the board: found 1 valid completion
-    return count + 1;
-  }
 }
