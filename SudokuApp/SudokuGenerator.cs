@@ -111,12 +111,29 @@ public class SudokuGenerator : IPuzzleGenerator
 
   // Fill the diagonal 3x3 matrices
   // The diagonal blocks are filled to simplify the process
-  private void FillDiagonal(int[,] grid)
+  private void FillDiagonal(int[,] grid, bool reset = false)
   {
     for (int i = 0; i < _boardSize; i += _boxSize)
     {
+      if (reset)
+      {
+        ResetBox(grid, i, i);
+        continue;
+      }
+
       // Fill each 3x3 subgrid diagonally
       FillBox(grid, i, i);
+    }
+  }
+
+  private void ResetBox(int[,] grid, int row, int col)
+  {
+    for (int i = 0; i < _boxSize; i++)
+    {
+      for (int j = 0; j < _boxSize; j++)
+      {
+        grid[row + i, col + j] = 0;
+      }
     }
   }
 
@@ -155,8 +172,20 @@ public class SudokuGenerator : IPuzzleGenerator
   private int[,] GenerateSudokuGrid()
   {
     int[,] grid = new int[_boardSize, _boardSize];
-    FillDiagonal(grid);
-    FillRemaining(grid, 0, 0);
+    bool isFit;
+
+    do
+    {
+      FillDiagonal(grid);
+
+      isFit = FillRemaining(grid, 0, 0);
+      if (!isFit)
+      {
+        // BACKTRACK: Reset previous diagonal
+        FillDiagonal(grid, reset: true);
+      }
+    } while (!isFit);
+
     return grid;
   }
 
