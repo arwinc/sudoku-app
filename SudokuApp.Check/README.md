@@ -33,12 +33,14 @@ The benchmark dynamically loads implementations from the core assembly. You can 
 
 To eliminate framework overhead and average out system variance, compile the application once and execute a 5-run sample loop using the native `time` utility.
 
+The generator will be configured with `RandomClueStrategy` to establish a baseline for clue placement speed.
+
 ```bash
 GEN="PuzzleGenerator" COUNT=10000 && \
-dotnet build && \
+dotnet build -c Release && \
 echo "=== Testing: $GEN ($COUNT) ===" && \
 seq 5 | xargs -I {} time -f "[{}] Time Elapsed: %E | CPU: %P" \
-dotnet SudokuApp.Check/bin/Debug/net10.0/SudokuApp.Check.dll "$GEN" $COUNT
+dotnet SudokuApp.Check/bin/Release/net10.0/SudokuApp.Check.dll "$GEN" $COUNT
 ```
 
 ### Configuration Details
@@ -58,16 +60,16 @@ The pipeline runs silently and outputs tracking logs in the following layout:
 
 ```bash
 === Testing: PuzzleGenerator (10000) ===
-[1] Time Elapsed: 0:02.33 | CPU: 104%
-[2] Time Elapsed: 0:01.41 | CPU: 173%
-[3] Time Elapsed: 0:02.38 | CPU: 106%
-[4] Time Elapsed: 0:02.34 | CPU: 104%
-[5] Time Elapsed: 0:02.34 | CPU: 104%
+[1] Time Elapsed: 0:01.36 | CPU: 106%
+[2] Time Elapsed: 0:01.34 | CPU: 106%
+[3] Time Elapsed: 0:01.30 | CPU: 107%
+[4] Time Elapsed: 0:01.28 | CPU: 113%
+[5] Time Elapsed: 0:01.34 | CPU: 106%
 
 === Testing: SudokuGenerator (10000) ===
-[1] Time Elapsed: 0:09.91 | CPU: 110%
-[2] Time Elapsed: 0:11.59 | CPU: 96%
-[3] Time Elapsed: 0:11.48 | CPU: 96%
-[4] Time Elapsed: 0:09.62 | CPU: 110%
-[5] Time Elapsed: 0:11.36 | CPU: 96%
+[1] Time Elapsed: 0:02.95 | CPU: 99%
+[2] Time Elapsed: 0:02.63 | CPU: 103%
+[3] Time Elapsed: 0:02.87 | CPU: 97%
+[4] Time Elapsed: 0:02.74 | CPU: 98%
+[5] Time Elapsed: 0:02.84 | CPU: 100%
 ```

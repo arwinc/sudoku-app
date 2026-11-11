@@ -13,17 +13,24 @@ public class PuzzleGenerator : IPuzzleGenerator
 
   private const int MAX_ROW_ATTEMPTS = 5;
   private readonly List<int[]> generatedNumbers = [];
+  private readonly IClueStrategy _clueStrategy;
   private readonly Random _random;
 
-  public PuzzleGenerator(int boardSize = 9, int? preFilledCellCount = null, Random? random = null)
+  public PuzzleGenerator(
+    int boardSize = 9,
+    int? preFilledCellCount = null,
+    IClueStrategy? clueStrategy = null,
+    Random? random = null
+  )
   {
     _boardSize = boardSize;
     _boxSize = (int)Math.Sqrt(boardSize);
     _preFilledCellCount = preFilledCellCount ?? (boardSize == 4 ? 7 : 30);
+    _clueStrategy = clueStrategy ?? new UniqueClueStrategy();
     _random = random ?? Random.Shared;
   }
 
-  public PuzzleGenerator(Random? random) : this(9, 30, random) {}
+  public PuzzleGenerator(Random? random) : this(9, 30, null, random) { }
 
   public Board Generate()
   {
@@ -64,7 +71,7 @@ public class PuzzleGenerator : IPuzzleGenerator
 
     Debug.WriteLine($">>> Total attempts: {totalAttempts}x");
 
-    HashSet<int> fixedPositions = GetRandomFixedPositions(_random);
+    HashSet<int> fixedPositions = GetRandomFixedPositions();
 
     List<Cell> cells = [..generatedNumbers
       .SelectMany((usedValue, rowIndex) => usedValue.Select((value, colIndex) => {
@@ -77,17 +84,20 @@ public class PuzzleGenerator : IPuzzleGenerator
     return new Board(cells);
   }
 
-  private HashSet<int> GetRandomFixedPositions(Random random)
+  private HashSet<int> GetRandomFixedPositions()
   {
-    int totalCells = _boardSize * _boardSize;
-    int[] positions = Enumerable.Range(0, totalCells).ToArray();
-    for (int i = 0; i < _preFilledCellCount; i++)
+    // Create a working grid copy initialized with full solution
+    int size = _boardSize;
+    int[,] grid = new int[size, size];
+    for (int r = 0; r < size; r++)
     {
-      int selected = random.Next(i, positions.Length);
-      (positions[i], positions[selected]) = (positions[selected], positions[i]);
+      for (int c = 0; c < size; c++)
+      {
+        grid[r, c] = generatedNumbers[r][c];
+      }
     }
 
-    return positions.Take(_preFilledCellCount).ToHashSet();
+    return _clueStrategy.SelectClues(grid, _preFilledCellCount, _random);
   }
 
   private (int[]?, bool, int) TryGenerateRow(int row)

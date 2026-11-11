@@ -31,8 +31,9 @@ if (type is null)
 
 var (boardSize, preFilledCellCount) = (9, 30);
 int boxSize = (int)Math.Sqrt(boardSize);
+IClueStrategy clueStrategy = new RandomClueStrategy();
 
-object? instance = Activator.CreateInstance(type, [boardSize, preFilledCellCount, Random.Shared]);
+object? instance = Activator.CreateInstance(type, [boardSize, preFilledCellCount, clueStrategy, Random.Shared]);
 if (instance is IPuzzleGenerator puzzleGenerator)
 {
   Run(puzzleGenerator, maxCount);

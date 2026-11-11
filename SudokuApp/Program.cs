@@ -116,9 +116,9 @@ void WriteCellCommandMessage(CellCommandResult result)
 
 void InitBoard(int size = 9)
 {
-  IPuzzleGenerator puzzleGenerator = new PuzzleGenerator(boardSize: size);
+  IPuzzleGenerator puzzleGenerator = new SudokuGenerator(boardSize: size);
   commandParser.BoardSize = size;
   game = new SudokuGame(puzzleGenerator.Generate());
 
-  Console.WriteLine("Here is your puzzle:");
+  Console.WriteLine("\nHere is your puzzle:");
 }

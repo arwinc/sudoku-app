@@ -7,24 +7,30 @@ public class SudokuGenerator : IPuzzleGenerator
   private readonly int _boardSize;
   private readonly int _boxSize;
   private readonly int _preFilledCellCount;
+  private readonly IClueStrategy _clueStrategy;
   private readonly Random _random;
 
-  public SudokuGenerator(int boardSize = 9, int? preFilledCellCount = null, Random? random = null)
+  public SudokuGenerator(
+    int boardSize = 9,
+    int? preFilledCellCount = null,
+    IClueStrategy? clueStrategy = null,
+    Random? random = null
+  )
   {
     _boardSize = boardSize;
     _boxSize = (int)Math.Sqrt(boardSize);
     _preFilledCellCount = preFilledCellCount ?? (boardSize == 4 ? 7 : 30);
+    _clueStrategy = clueStrategy ?? new UniqueClueStrategy();
     _random = random ?? Random.Shared;
   }
 
-  public SudokuGenerator(Random? random) : this(9, 30, random) {}
+  public SudokuGenerator(Random? random) : this(9, 30, null, random) { }
 
   public Board Generate()
   {
     int[,] sudoku = GenerateSudokuGrid();
 
-    // TODO: Need improvement to ensure there can be only one valid solution
-    HashSet<int> fixedPositions = GetRandomFixedPositions();
+    HashSet<int> fixedPositions = _clueStrategy.SelectClues(sudoku, _preFilledCellCount, _random);
 
     int[] solution = sudoku.Cast<int>().ToArray();
     var cells = Enumerable.Range(0, solution.Length)
@@ -189,16 +195,37 @@ public class SudokuGenerator : IPuzzleGenerator
     return grid;
   }
 
-  private HashSet<int> GetRandomFixedPositions()
+  private int CountSolutions(int[,] grid, int count = 0)
   {
-    int totalCells = _boardSize * _boardSize;
-    int[] positions = Enumerable.Range(0, totalCells).ToArray();
-    for (int index = 0; index < _preFilledCellCount; index++)
+    for (int row = 0; row < _boardSize; row++)
     {
-      int selected = _random.Next(index, positions.Length);
-      (positions[index], positions[selected]) = (positions[selected], positions[index]);
+      for (int col = 0; col < _boardSize; col++)
+      {
+        if (grid[row, col] == 0)
+        {
+          for (int num = 1; num <= _boardSize; num++)
+          {
+            if (CheckIfSafe(grid, row, col, num))
+            {
+              grid[row, col] = num;
+              count = CountSolutions(grid, count);
+
+              // Reset to empty
+              grid[row, col] = 0;
+
+              // Has more than 1 solution
+              if (count > 1)
+              {
+                return count;
+              }
+            }
+          }
+          return count;
+        }
+      }
     }
 
-    return positions.Take(_preFilledCellCount).ToHashSet();
+    // Reached the end of the board: found 1 valid completion
+    return count + 1;
   }
 }
