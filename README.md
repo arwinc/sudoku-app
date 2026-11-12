@@ -1,6 +1,6 @@
 # Sudoku Command-Line Application & Test Suite
 
-An interactive, console-based 9x9 Sudoku game and comprehensive unit testing suite written in C# (.NET 10.0). The application enables players to generate Sudoku puzzles, interact via CLI commands, request hints, check for rule violations, undo last commands, and quit or replay upon completion.
+An interactive, console-based Sudoku game supporting both 4x4 and 9x9 grid sizes, comprehensive unit testing suite, and generator performance benchmarking tool written in C# (.NET 10.0). The application enables players to generate Sudoku puzzles, interact via CLI commands, request hints, check for rule violations, undo last commands, and quit or replay upon completion.
 
 ---
 
@@ -12,24 +12,24 @@ The solution (`Sudoku.slnx`) contains three projects:
 3. **`SudokuApp.Check`**: Puzzle generator speed benchmark utility.
 
 ### Core Application Components (`SudokuApp`)
-* **`Program.cs`**: Application entry point managing the startup grid size selection, game loop, input handling, board rendering, and replay prompts.
+* **`Program.cs`**: Application entry point managing the startup grid size selection (4x4 or 9x9), game loop, input handling, board rendering, and replay prompts.
 * **`SudokuGame.cs`**: High-level game controller managing board state, processing user cell commands (`PlaceValue`, `Clear`), undo last cell commands, checking solution completion (`IsSolved`), and identifying hint cells.
-* **`Board.cs` & `Cell.cs`**: Domain model for the 9x9 grid. Each `Cell` tracks row/column indices, solution digit (`Value`), pre-filled clue status (`IsFixed`), and player entry (`UserValue`). `Board` handles duplicate validation across rows, columns, and 3x3 subgrids.
+* **`Board.cs` & `Cell.cs`**: Domain model for the square grids (supporting 4x4 and 9x9). Each `Cell` tracks row/column indices, solution digit (`Value`), pre-filled clue status (`IsFixed`), and player entry (`UserValue`). `Board` handles duplicate validation across rows, columns, and subgrids (2x2 or 3x3).
 * **`PuzzleGenerator.cs`**: Defines `IPuzzleGenerator` interface and `PuzzleGenerator` class, which generates full valid Sudoku grids row-by-row using row backtracking (non-deterministic) and delegates clue selection to an `IClueStrategy`.
-* **`SudokuGenerator.cs`**: Implements `IPuzzleGenerator`. Generates full valid Sudoku grids by populating diagonal 3x3 subgrids first, recursively solving remaining cells via backtracking (`FillRemaining`), and delegating clue selection to an `IClueStrategy`.
+* **`SudokuGenerator.cs`**: Implements `IPuzzleGenerator`. Generates full valid Sudoku grids by populating diagonal subgrids first, recursively solving remaining cells via backtracking (`FillRemaining`), and delegating clue selection to an `IClueStrategy`.
 * **`ClueStrategy.cs`**: Strategy interface for clue selection: 
     * `UniqueClueStrategy` *(Default)*: Performs in-place clue removal with a solution counter to guarantee unique solution.
     * `RandomClueStrategy`: Picks random clue positions without solver verification.
 * **`SudokuCommandParser.cs`**: Uses regular expressions to parse CLI commands into strongly typed `SudokuCommand` records (`PlaceValue`, `Clear`, `Undo`, `Hint`, `Check`, `Quit`, `NewGame`, `Invalid`).
-* **`BoardRenderer.cs`**: ASCII console renderer displaying a formatted 9x9 grid with ANSI color formatting for user-entered digits.
+* **`BoardRenderer.cs`**: ASCII console renderer displaying a formatted 4x4 and 9x9 grids with ANSI color formatting for user-entered digits.
 
 ### Unit Test Project (`SudokuApp.Tests`)
 * **`CellTests.cs`**: Validates cell state mutations (`TrySetUserValue`), fixed vs. editable logic, value clearing, and out-of-range bounds checks.
 * **`BoardTests.cs`**: Tests value placement rules, violation detection for rows, columns, and subgrids (`CheckCell`), board-wide validation (`CheckBoard`), and completion detection (`IsSolved`).
 * **`SudokuGameTests.cs`**: Tests hint retrieval logic (`GetHintCell`), cell command processing (`ProcessCellCommand`), undo command, and board violation reporting.
 * **`ClueStrategyTests.cs`**: Validates clue strategies — checks target clue count and boundary indices for `RandomClueStrategy`, and verifies solution uniqueness (`CountSolutions == 1`) versus ambiguity detection (`CountSolutions > 1`) for `UniqueClueStrategy`.
-* **`SudokuGeneratorTests.cs`**: Verifies generation constraints (81 cells total, exactly 30 pre-filled fixed cells), solution validity across all rows/cols/boxes, and reproducibility via random seed initialization (with the generator initialized using the fast `RandomClueStrategy` to avoid solver overhead).
-* **`PuzzleGeneratorTests.cs`**: Verifies generation of the original `PuzzleGenerator` code (with the generator initialized using the fast `RandomClueStrategy` to avoid solver overhead).
+* **`SudokuGeneratorTests.cs`**: Verifies generation constraints (81 cells total, exactly 30 pre-filled fixed cells in 9x9 grid size), solution validity across all rows/cols/boxes, and reproducibility via random seed initialization (with the generator initialized using the fast `RandomClueStrategy` to avoid solver overhead).
+* **`PuzzleGeneratorTests.cs`**: Verifies generation of the `PuzzleGenerator` code in 9x9 grid size (with the generator initialized using the fast `RandomClueStrategy` to avoid solver overhead).
 * **`SudokuCommandParserTests.cs`**: Validates parsing for `quit`, `hint`, `check` coordinate conversion (e.g., `B3 7` -> row 1, col 2, value 7), `new` / `new [4|9]` commands to restart game session with active size retention or size selection, cell placement, `clear`, and malformed/invalid inputs.
 * **`BoardRendererTests.cs`**: Validates ASCII board header and row output, user-entry ANSI formatting, and blank cell rendering (`_`).
 
@@ -61,7 +61,7 @@ IPuzzleGenerator puzzleGenerator = new PuzzleGenerator();
 ## Design Assumptions & Key Implementation Notes
 
 1. **Puzzle Generation & Error Handling**:
-   * The generation algorithm is based on standard Sudoku subgrid filling and backtracking logic (adapted from GeeksforGeeks) with custom adjustments for blank editable cells.
+   * The generation algorithm is based on standard Sudoku subgrid filling (2x2 subgrids for 4x4, 3x3 subgrids for 9x9) and backtracking logic (adapted from GeeksforGeeks) with custom adjustments for blank editable cells.
    * Generation includes checks to ensure recursive backtracking (`FillRemaining`) completes successfully; if generation fails, an exception is thrown to guarantee broken grids containing zero-valued cells are never returned.
 2. **Uniqueness Guarantee**:
    * Clue selection is decoupled via the `IClueStrategy` interface: 
