@@ -38,6 +38,8 @@ public class PuzzleGenerator : IPuzzleGenerator
     generatedNumbers.Clear();
 
     int totalAttempts = 0;
+    int totalBacktracks = 0;
+    const int MAX_BACKTRACKS = 5_000;
     int row = 0;
 
     // Loop until all 9 rows are successfully generated
@@ -67,9 +69,15 @@ public class PuzzleGenerator : IPuzzleGenerator
           generatedNumbers.RemoveAt(generatedNumbers.Count - 1);
         }
         row = Math.Max(0, row - 1);
+        totalBacktracks++;
+        if (totalBacktracks > MAX_BACKTRACKS)
+        {
+          throw new InvalidOperationException("Exceeded maximum backtrack attempts");
+        }
       }
     }
 
+    Debug.WriteLine($">>> Total backtracks: {totalBacktracks}x");
     Debug.WriteLine($">>> Total attempts: {totalAttempts}x");
 
     HashSet<int> fixedPositions = GetRandomFixedPositions();

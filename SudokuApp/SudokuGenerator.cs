@@ -179,6 +179,8 @@ public class SudokuGenerator : IPuzzleGenerator
   private int[,] GenerateSudokuGrid()
   {
     int[,] grid = new int[_boardSize, _boardSize];
+    int totalBacktracks = 0;
+    const int MAX_BACKTRACKS = 5_000;
     bool isFit;
 
     do
@@ -190,6 +192,12 @@ public class SudokuGenerator : IPuzzleGenerator
       {
         // BACKTRACK: Reset previous diagonal
         FillDiagonal(grid, reset: true);
+
+        totalBacktracks++;
+        if (totalBacktracks > MAX_BACKTRACKS)
+        {
+          throw new InvalidOperationException("Exceeded maximum backtrack attempts");
+        }
       }
     } while (!isFit);
 
