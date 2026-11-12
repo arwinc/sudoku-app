@@ -1,11 +1,11 @@
 public interface IClueStrategy
 {
-  HashSet<int> SelectClues(int[,] solvedGrid, int targetClueCount, Random random);
+  HashSet<int> SelectClues(int[,] solvedGrid, int targetClueCount, Random? random = null);
 }
 
 public class RandomClueStrategy() : IClueStrategy
 {
-  public HashSet<int> SelectClues(int[,] solvedGrid, int targetClueCount, Random? random)
+  public HashSet<int> SelectClues(int[,] solvedGrid, int targetClueCount, Random? random = null)
   {
     random ??= Random.Shared;
     int size = solvedGrid.GetLength(0);
@@ -22,7 +22,7 @@ public class RandomClueStrategy() : IClueStrategy
 
 public class UniqueClueStrategy() : IClueStrategy
 {
-  private int CountSolutions(int[,] grid, int count = 0)
+  public static int CountSolutions(int[,] grid, int count = 0)
   {
     int size = grid.GetLength(0);
     int boxSize = (int)Math.Sqrt(size);
@@ -69,7 +69,7 @@ public class UniqueClueStrategy() : IClueStrategy
     return count;
   }
 
-  private bool IsSafeToPlace(int[,] grid, int row, int col, int num, int boxSize)
+  private static bool IsSafeToPlace(int[,] grid, int row, int col, int num, int boxSize)
   {
     int size = grid.GetLength(0);
     for (int i = 0; i < size; i++)
@@ -91,7 +91,7 @@ public class UniqueClueStrategy() : IClueStrategy
     return true;
   }
 
-  public HashSet<int> SelectClues(int[,] solvedGrid, int targetClueCount, Random? random)
+  public HashSet<int> SelectClues(int[,] solvedGrid, int targetClueCount, Random? random = null)
   {
     random ??= Random.Shared;
 

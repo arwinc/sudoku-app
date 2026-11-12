@@ -53,7 +53,7 @@ public class SudokuCommandParser
       return new SudokuCommand(SudokuCommandType.Undo);
     }
 
-    Match newGameMatch = Regex.Match(input ?? string.Empty, @"^new(?:\s([49]))?$", RegexOptions.IgnoreCase);
+    Match newGameMatch = Regex.Match(input ?? string.Empty, @"^new(?:\s([49]))?$");
     if (newGameMatch.Success)
     {
       string sizeGroup = newGameMatch.Groups[1].Value;
@@ -68,7 +68,7 @@ public class SudokuCommandParser
     char maxRowChar = (char)('A' + BoardSize - 1);
     string movePattern = $@"^([A-{maxRowChar}])([1-{BoardSize}])\s+([1-{BoardSize}]|clear)$";
 
-    Match match = Regex.Match(input ?? string.Empty, movePattern, RegexOptions.IgnoreCase);
+    Match match = Regex.Match(input ?? string.Empty, movePattern);
     if (!match.Success)
     {
       return new SudokuCommand(SudokuCommandType.Invalid);
