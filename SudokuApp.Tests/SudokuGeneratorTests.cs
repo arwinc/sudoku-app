@@ -2,10 +2,12 @@ namespace SudokuApp.Tests;
 
 public class SudokuGeneratorTests
 {
+  private readonly IClueStrategy clueStrategy = new RandomClueStrategy();
+
   [Fact]
   public void Generate_Returns81CellsWithExactly30PreFilled()
   {
-    var board = new SudokuGenerator(new Random(42)).Generate();
+    var board = NewPuzzleGenerator().Generate();
 
     Assert.Equal(9 * 9, board.Cells.Count);
     Assert.Equal(30, board.Cells.Count(cell => cell.IsFixed));
@@ -14,7 +16,7 @@ public class SudokuGeneratorTests
   [Fact]
   public void Generate_ReturnsAValidCompletedSolution()
   {
-    var board = new SudokuGenerator(new Random(42)).Generate();
+    var board = NewPuzzleGenerator().Generate();
     int[] expectedValues = Enumerable.Range(1, 9).ToArray();
 
     foreach (var row in board.Cells.GroupBy(cell => cell.RowIndex))
@@ -46,8 +48,8 @@ public class SudokuGeneratorTests
   [Fact]
   public void Generate_IsReproducibleWithTheSameSeed()
   {
-    var firstBoard = new SudokuGenerator(new Random(42)).Generate();
-    var secondBoard = new SudokuGenerator(new Random(42)).Generate();
+    var firstBoard = NewPuzzleGenerator().Generate();
+    var secondBoard = NewPuzzleGenerator().Generate();
 
     var firstCells = firstBoard.Cells
       .Select(cell => (cell.RowIndex, cell.ColumnIndex, cell.Value, cell.IsFixed));
@@ -55,5 +57,10 @@ public class SudokuGeneratorTests
       .Select(cell => (cell.RowIndex, cell.ColumnIndex, cell.Value, cell.IsFixed));
 
     Assert.Equal(firstCells, secondCells);
+  }
+
+  private IPuzzleGenerator NewPuzzleGenerator()
+  {
+    return new SudokuGenerator(clueStrategy, new Random(42));
   }
 }

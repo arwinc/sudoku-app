@@ -30,7 +30,8 @@ public class PuzzleGenerator : IPuzzleGenerator
     _random = random ?? Random.Shared;
   }
 
-  public PuzzleGenerator(Random? random) : this(9, 30, null, random) { }
+  public PuzzleGenerator(IClueStrategy? clueStrategy, Random? random) : this(9, 30, clueStrategy, random) { }
+  public PuzzleGenerator(Random? random) : this(null, random) { }
 
   public Board Generate()
   {

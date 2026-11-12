@@ -24,7 +24,8 @@ public class SudokuGenerator : IPuzzleGenerator
     _random = random ?? Random.Shared;
   }
 
-  public SudokuGenerator(Random? random) : this(9, 30, null, random) { }
+  public SudokuGenerator(IClueStrategy? clueStrategy, Random? random) : this(9, 30, clueStrategy, random) { }
+  public SudokuGenerator(Random? random) : this(null, random) { }
 
   public Board Generate()
   {

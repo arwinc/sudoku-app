@@ -27,8 +27,8 @@ The solution (`Sudoku.slnx`) contains three projects:
 * **`CellTests.cs`**: Validates cell state mutations (`TrySetUserValue`), fixed vs. editable logic, value clearing, and out-of-range bounds checks.
 * **`BoardTests.cs`**: Tests value placement rules, violation detection for rows, columns, and subgrids (`CheckCell`), board-wide validation (`CheckBoard`), and completion detection (`IsSolved`).
 * **`SudokuGameTests.cs`**: Tests hint retrieval logic (`GetHintCell`), cell command processing (`ProcessCellCommand`), undo command, and board violation reporting.
-* **`SudokuGeneratorTests.cs`**: Verifies generation constraints (81 cells total, exactly 30 pre-filled fixed cells), solution validity across all rows/cols/boxes, and reproducibility via random seed initialization.
-* **`PuzzleGeneratorTests.cs`**: Verifies generation of the original `PuzzleGenerator` code.
+* **`SudokuGeneratorTests.cs`**: Verifies generation constraints (81 cells total, exactly 30 pre-filled fixed cells), solution validity across all rows/cols/boxes, and reproducibility via random seed initialization (with the generator initialized using the fast `RandomClueStrategy` to avoid solver overhead).
+* **`PuzzleGeneratorTests.cs`**: Verifies generation of the original `PuzzleGenerator` code (with the generator initialized using the fast `RandomClueStrategy` to avoid solver overhead).
 * **`SudokuCommandParserTests.cs`**: Validates parsing for `quit`, `hint`, `check`, coordinate conversion (e.g., `B3 7` -> row 1, col 2, value 7), `clear`, and malformed/invalid inputs.
 * **`BoardRendererTests.cs`**: Validates ASCII board header and row output, user-entry ANSI formatting, and blank cell rendering (`_`).
 
