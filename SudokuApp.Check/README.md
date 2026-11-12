@@ -60,16 +60,16 @@ The pipeline runs silently and outputs tracking logs in the following layout:
 
 ```bash
 === Testing: PuzzleGenerator (10000) ===
-[1] Time Elapsed: 0:01.36 | CPU: 106%
-[2] Time Elapsed: 0:01.34 | CPU: 106%
-[3] Time Elapsed: 0:01.30 | CPU: 107%
-[4] Time Elapsed: 0:01.28 | CPU: 113%
-[5] Time Elapsed: 0:01.34 | CPU: 106%
+[1] Time Elapsed: 0:01.30 | CPU: 106%
+[2] Time Elapsed: 0:01.29 | CPU: 107%
+[3] Time Elapsed: 0:01.27 | CPU: 107%
+[4] Time Elapsed: 0:01.25 | CPU: 107%
+[5] Time Elapsed: 0:01.26 | CPU: 106%
 
 === Testing: SudokuGenerator (10000) ===
-[1] Time Elapsed: 0:02.95 | CPU: 99%
-[2] Time Elapsed: 0:02.63 | CPU: 103%
-[3] Time Elapsed: 0:02.87 | CPU: 97%
-[4] Time Elapsed: 0:02.74 | CPU: 98%
-[5] Time Elapsed: 0:02.84 | CPU: 100%
+[1] Time Elapsed: 0:02.60 | CPU: 98%
+[2] Time Elapsed: 0:02.78 | CPU: 98%
+[3] Time Elapsed: 0:02.61 | CPU: 101%
+[4] Time Elapsed: 0:02.64 | CPU: 99%
+[5] Time Elapsed: 0:02.77 | CPU: 98%
 ```
