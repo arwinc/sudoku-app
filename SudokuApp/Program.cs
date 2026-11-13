@@ -44,6 +44,9 @@ bool ProcessInput(string? input)
     case SudokuCommandType.Check:
       WriteCheckMessage(game.CheckBoard());
       break;
+    case SudokuCommandType.Undo:
+      game.UndoLastAction();
+      break;
     case SudokuCommandType.PlaceValue:
     case SudokuCommandType.Clear:
       WriteCellCommandMessage(game.ProcessCellCommand(command));

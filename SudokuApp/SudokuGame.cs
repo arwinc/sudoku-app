@@ -9,9 +9,13 @@ public enum CellCommandStatus
 
 public sealed record CellCommandResult(CellCommandStatus Status, Cell? Cell = null);
 
+public sealed record HistoryItem(Cell cell);
+
 public class SudokuGame
 {
   private readonly Random _random;
+  private Stack<HistoryItem> history = new();
+  private bool IsUndoAction;
 
   public Board Board { get; }
   public bool IsSolved => Board.IsSolved();
@@ -20,6 +24,7 @@ public class SudokuGame
   {
     Board = board;
     _random = random ?? Random.Shared;
+    history.Clear();
   }
 
   public Cell? GetHintCell()
@@ -34,6 +39,32 @@ public class SudokuGame
   }
 
   public Board.BoardViolation? CheckBoard() => Board.CheckBoard();
+
+  public void UndoLastAction()
+  {
+    if (!history.Any())
+    {
+      return;
+    }
+
+    var cell = history.Pop().cell;
+    if (cell.HasUserValue)
+    {
+      try
+      {
+        IsUndoAction = true;
+        ProcessCellCommand(SudokuCommand.Create(SudokuCommandType.PlaceValue, cell, cell.UserValue));
+      }
+      finally
+      {
+        IsUndoAction = false;
+      }
+    }
+    else
+    {
+      ProcessCellCommand(SudokuCommand.Create(SudokuCommandType.Clear, cell));
+    }
+  }
 
   public CellCommandResult ProcessCellCommand(SudokuCommand command)
   {
@@ -66,9 +97,17 @@ public class SudokuGame
       return new CellCommandResult(CellCommandStatus.InvalidCommand, cell);
     }
 
+    var historyItem = new HistoryItem(cell.Clone());
     if (!Board.TryPlaceValue(cell, value))
     {
       return new CellCommandResult(CellCommandStatus.InvalidValue, cell);
+    }
+    else
+    {
+      if (!IsUndoAction)
+      {
+        history.Push(historyItem);
+      }
     }
 
     return new CellCommandResult(CellCommandStatus.Accepted, cell);

@@ -41,6 +41,44 @@ public class SudokuGameTests
   }
 
   [Fact]
+  public void ProcessUndoCommand_RevertLastAction()
+  {
+    var cell = new Cell(0, 0, 5, false);
+    var game = new SudokuGame(new Board([cell]));
+
+    // A1 1
+    game.ProcessCellCommand(SudokuCommand.Create(SudokuCommandType.PlaceValue, cell, 1));
+
+    game.UndoLastAction();
+    Assert.Null(cell.UserValue);
+  }
+
+  [Fact]
+  public void ProcessUndoCommand_RevertMultiplePlaceCommands()
+  {
+    var cell1 = new Cell(0, 0, 5, false);
+    var cell2 = new Cell(1, 1, 6, false);
+    var game = new SudokuGame(new Board([cell1, cell2]));
+
+    // Action: A1 1, B2 2, A1 3
+    game.ProcessCellCommand(SudokuCommand.Create(SudokuCommandType.PlaceValue, cell1, 1));
+    game.ProcessCellCommand(SudokuCommand.Create(SudokuCommandType.PlaceValue, cell2, 2));
+    game.ProcessCellCommand(SudokuCommand.Create(SudokuCommandType.PlaceValue, cell1, 3));
+
+    game.UndoLastAction();
+    Assert.Equal(1, cell1.UserValue);
+    Assert.Equal(2, cell2.UserValue);
+
+    game.UndoLastAction();
+    Assert.Equal(1, cell1.UserValue);
+    Assert.Null(cell2.UserValue);
+
+    game.UndoLastAction();
+    Assert.Null(cell1.UserValue);
+    Assert.Null(cell2.UserValue);
+  }
+
+  [Fact]
   public void ProcessCellCommand_ClearsEditableCell()
   {
     var cell = new Cell(0, 0, 5, false);

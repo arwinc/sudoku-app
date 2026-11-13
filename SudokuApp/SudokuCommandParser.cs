@@ -7,14 +7,22 @@ public enum SudokuCommandType
   Hint,
   Check,
   PlaceValue,
-  Clear
+  Clear,
+  Undo
 }
 
 public sealed record SudokuCommand(
   SudokuCommandType Type,
   int? RowIndex = null,
   int? ColumnIndex = null,
-  int? Value = null);
+  int? Value = null)
+{
+  public static SudokuCommand Create(
+    SudokuCommandType type,
+    Cell cell,
+    int? value = null
+  ) => new SudokuCommand(type, cell.RowIndex, cell.ColumnIndex, value);
+}
 
 public class SudokuCommandParser
 {
@@ -35,6 +43,11 @@ public class SudokuCommandParser
     if (string.Equals(input, "check", StringComparison.Ordinal))
     {
       return new SudokuCommand(SudokuCommandType.Check);
+    }
+
+    if (string.Equals(input, "undo", StringComparison.Ordinal))
+    {
+      return new SudokuCommand(SudokuCommandType.Undo);
     }
 
     Match match = MovePattern.Match(input ?? string.Empty);

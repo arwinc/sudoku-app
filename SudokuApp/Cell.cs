@@ -1,4 +1,4 @@
-public class Cell
+public class Cell : ICloneable
 {
   public int RowIndex { get; }
   public int ColumnIndex { get; }
@@ -40,6 +40,13 @@ public class Cell
 
   public bool HasCurrentValueOf(int value) =>
     IsFixed ? Value == value : UserValue == value;
+
+  public Cell Clone() => (Cell)this.MemberwiseClone();
+
+  object ICloneable.Clone()
+  {
+    return Clone();
+  }
 
   public bool HasUserValue =>
     !IsFixed && UserValue.HasValue;
