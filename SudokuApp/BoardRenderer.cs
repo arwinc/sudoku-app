@@ -9,7 +9,7 @@ public class BoardRenderer
 
   public void Render(Board board)
   {
-    WriteRow(' ', string.Join("", Enumerable.Range(1, Board.Size)));
+    WriteRow(' ', string.Join("", Enumerable.Range(1, board.Size)));
     _output.WriteLine();
 
     var rowHeadings = board.Cells

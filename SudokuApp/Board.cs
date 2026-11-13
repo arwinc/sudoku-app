@@ -8,13 +8,17 @@ public enum ViolationCheck
 
 public class Board
 {
-  public const int Size = 9;
+  public int Size { get; }
+
+  public int BoxSize { get; }
 
   public IReadOnlyList<Cell> Cells { get; }
 
   public Board(IEnumerable<Cell> cells)
   {
     Cells = cells.ToList();
+    Size = (int)Math.Sqrt(cells.Count());
+    BoxSize = (int)Math.Sqrt(Size);
   }
 
   public Cell? GetCell(int row, int col) =>
@@ -23,7 +27,7 @@ public class Board
   public bool TryPlaceValue(Cell cell, int value)
   {
     if (cell is null || cell.IsFixed) return false;
-    if (value is < 1 or > 9) return false;
+    if (value is < 1 || value > Size) return false;
     return cell.TrySetUserValue(value);
   }
 
@@ -52,24 +56,13 @@ public class Board
 
   private bool IsInSameSubgrid(int row, int col, int value)
   {
-    int[] rows = (row % 3) switch
-    {
-      0 => [row, row + 1, row + 2],
-      1 => [row - 1, row, row + 1],
-      _ => [row - 2, row - 1, row],
-    };
-
-    int[] cols = (col % 3) switch
-    {
-      0 => [col, col + 1, col + 2],
-      1 => [col - 1, col, col + 1],
-      _ => [col - 2, col - 1, col],
-    };
+    int startRow = (row / BoxSize) * BoxSize;
+    int startCol = (col / BoxSize) * BoxSize;
 
     return Cells
-      .Where(x => x.RowIndex != row && x.ColumnIndex != col)
-      .Any(x => rows.Contains(x.RowIndex)
-        && cols.Contains(x.ColumnIndex)
+      .Where(x => !(x.RowIndex == row && x.ColumnIndex == col))
+      .Any(x => x.RowIndex >= startRow && x.RowIndex < startRow + BoxSize
+        && x.ColumnIndex >= startCol && x.ColumnIndex < startCol + BoxSize
         && x.HasCurrentValueOf(value));
   }
 
@@ -82,11 +75,16 @@ public class Board
       var violation = CheckCell(cell);
       if (violation != ViolationCheck.None)
       {
-        return new BoardViolation(cell, violation);
+        int? gridSize = violation switch
+        {
+          ViolationCheck.SubgridViolation => BoxSize,
+          _ => null
+        };
+        return new BoardViolation(cell, violation, gridSize);
       }
     }
     return null;
   }
 
-  public sealed record BoardViolation(Cell cell, ViolationCheck type);
+  public sealed record BoardViolation(Cell cell, ViolationCheck type, int? gridSize = null);
 }

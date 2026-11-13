@@ -2,10 +2,12 @@ namespace SudokuApp.Tests;
 
 public class PuzzleGeneratorTests
 {
+  private readonly IClueStrategy clueStrategy = new RandomClueStrategy();
+
   [Fact]
   public void Generate_ReturnsBoardWith81CellsAnd30PreFilledCells()
   {
-    var board = new PuzzleGenerator(new Random(42)).Generate();
+    var board = NewPuzzleGenerator().Generate();
 
     Assert.Equal(81, board.Cells.Count);
     Assert.Equal(30, board.Cells.Count(cell => cell.IsFixed));
@@ -14,7 +16,7 @@ public class PuzzleGeneratorTests
   [Fact]
   public void Generate_ReturnsValidCompletedSolution()
   {
-    var board = new PuzzleGenerator(new Random(42)).Generate();
+    var board = NewPuzzleGenerator().Generate();
     int[] expectedValues = Enumerable.Range(1, 9).ToArray();
 
     for (int row = 0; row < 9; row++)
@@ -58,8 +60,8 @@ public class PuzzleGeneratorTests
   [Fact]
   public void Generate_ProducesSameBoard_WhenRandomSeedIsTheSame()
   {
-    var firstBoard = new PuzzleGenerator(new Random(42)).Generate();
-    var secondBoard = new PuzzleGenerator(new Random(42)).Generate();
+    var firstBoard = NewPuzzleGenerator().Generate();
+    var secondBoard = NewPuzzleGenerator().Generate();
 
     var firstCells = firstBoard.Cells
       .Select(cell => (cell.RowIndex, cell.ColumnIndex, cell.Value, cell.IsFixed));
@@ -73,12 +75,11 @@ public class PuzzleGeneratorTests
   [Fact]
   public void Generate_ReturnsAValidCompletedSolution_UnderStress()
   {
-    var random = new Random(42);
     for (int i = 0; i < 500; i++)
     {
 
-      var board = new PuzzleGenerator(random).Generate();
-      int[] expectedValues = Enumerable.Range(1, Board.Size).ToArray();
+      var board = NewPuzzleGenerator().Generate();
+      int[] expectedValues = Enumerable.Range(1, 9).ToArray();
 
       foreach (var row in board.Cells.GroupBy(cell => cell.RowIndex))
       {
@@ -90,9 +91,9 @@ public class PuzzleGeneratorTests
         Assert.Equal(expectedValues, column.Select(cell => cell.Value).Order().ToArray());
       }
 
-      for (int boxRow = 0; boxRow < Board.Size; boxRow += 3)
+      for (int boxRow = 0; boxRow < 9; boxRow += 3)
       {
-        for (int boxColumn = 0; boxColumn < Board.Size; boxColumn += 3)
+        for (int boxColumn = 0; boxColumn < 9; boxColumn += 3)
         {
           int[] boxValues = board.Cells
             .Where(cell => cell.RowIndex >= boxRow && cell.RowIndex < boxRow + 3
@@ -105,5 +106,10 @@ public class PuzzleGeneratorTests
         }
       }
     }
+  }
+
+  private IPuzzleGenerator NewPuzzleGenerator()
+  {
+    return new PuzzleGenerator(clueStrategy, new Random(42));
   }
 }

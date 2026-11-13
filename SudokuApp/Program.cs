@@ -1,17 +1,19 @@
 ﻿SudokuGame game;
-IPuzzleGenerator puzzleGenerator = new SudokuGenerator();
 SudokuCommandParser commandParser = new();
 BoardRenderer boardRenderer = new();
 
 Console.WriteLine("Welcome to Sudoku");
-
-InitBoard();
+Console.Write("Select grid size — 4 (4x4) or 9 (9x9) [Default: 9]: ");
+string? startupInput = Console.ReadLine();
+int chosenSize = "4".Equals(startupInput?.Trim(), StringComparison.Ordinal) ? 4 : 9;
+InitBoard(chosenSize);
 boardRenderer.Render(game.Board);
 
 string? input;
 do
 {
   Console.WriteLine("\nEnter command (e.g., A3 4, C5 clear, undo, hint, check, quit):");
+  Console.WriteLine("Or start new game (e.g., new, new 4, new 9):");
   input = Console.ReadLine();
 
   if (input is null || !ProcessInput(input)) break;
@@ -25,7 +27,7 @@ do
     Console.WriteLine("Press any key to play again...");
     Console.ReadKey();
 
-    InitBoard();
+    InitBoard(chosenSize);
     boardRenderer.Render(game.Board);
   }
 }
@@ -38,6 +40,11 @@ bool ProcessInput(string? input)
   {
     case SudokuCommandType.Quit:
       return false;
+    case SudokuCommandType.NewGame:
+      int newSize = command.BoardSize ?? game.Board.Size;
+      Console.WriteLine($"\nStarting new {newSize}x{newSize} game...");
+      InitBoard(newSize);
+      return true;
     case SudokuCommandType.Hint:
       WriteHintMessage(game.GetHintCell());
       break;
@@ -81,7 +88,7 @@ void WriteCheckMessage(Board.BoardViolation? violation)
   {
     ViolationCheck.RowViolation => $"Number {cell.UserValue} already exists in Row {cell.RowLabel}.",
     ViolationCheck.ColumnViolation => $"Number {cell.UserValue} already exists in Column {cell.ColLabel}.",
-    ViolationCheck.SubgridViolation => $"Number {cell.UserValue} already exists in the same 3x3 subgrid.",
+    ViolationCheck.SubgridViolation => $"Number {cell.UserValue} already exists in the same {violation.gridSize}x{violation.gridSize} subgrid.",
     _ => "No rule violations detected."
   };
 
@@ -107,9 +114,11 @@ void WriteCellCommandMessage(CellCommandResult result)
   }
 }
 
-void InitBoard()
+void InitBoard(int size = 9)
 {
+  IPuzzleGenerator puzzleGenerator = new SudokuGenerator(boardSize: size);
+  commandParser.BoardSize = size;
   game = new SudokuGame(puzzleGenerator.Generate());
 
-  Console.WriteLine("Here is your puzzle:");
+  Console.WriteLine("\nHere is your puzzle:");
 }

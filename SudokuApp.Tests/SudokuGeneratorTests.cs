@@ -2,20 +2,22 @@ namespace SudokuApp.Tests;
 
 public class SudokuGeneratorTests
 {
+  private readonly IClueStrategy clueStrategy = new RandomClueStrategy();
+
   [Fact]
   public void Generate_Returns81CellsWithExactly30PreFilled()
   {
-    var board = new SudokuGenerator(new Random(42)).Generate();
+    var board = NewPuzzleGenerator().Generate();
 
-    Assert.Equal(Board.Size * Board.Size, board.Cells.Count);
+    Assert.Equal(9 * 9, board.Cells.Count);
     Assert.Equal(30, board.Cells.Count(cell => cell.IsFixed));
   }
 
   [Fact]
   public void Generate_ReturnsAValidCompletedSolution()
   {
-    var board = new SudokuGenerator(new Random(42)).Generate();
-    int[] expectedValues = Enumerable.Range(1, Board.Size).ToArray();
+    var board = NewPuzzleGenerator().Generate();
+    int[] expectedValues = Enumerable.Range(1, 9).ToArray();
 
     foreach (var row in board.Cells.GroupBy(cell => cell.RowIndex))
     {
@@ -27,9 +29,9 @@ public class SudokuGeneratorTests
       Assert.Equal(expectedValues, column.Select(cell => cell.Value).Order().ToArray());
     }
 
-    for (int boxRow = 0; boxRow < Board.Size; boxRow += 3)
+    for (int boxRow = 0; boxRow < 9; boxRow += 3)
     {
-      for (int boxColumn = 0; boxColumn < Board.Size; boxColumn += 3)
+      for (int boxColumn = 0; boxColumn < 9; boxColumn += 3)
       {
         int[] boxValues = board.Cells
           .Where(cell => cell.RowIndex >= boxRow && cell.RowIndex < boxRow + 3
@@ -46,8 +48,8 @@ public class SudokuGeneratorTests
   [Fact]
   public void Generate_IsReproducibleWithTheSameSeed()
   {
-    var firstBoard = new SudokuGenerator(new Random(42)).Generate();
-    var secondBoard = new SudokuGenerator(new Random(42)).Generate();
+    var firstBoard = NewPuzzleGenerator().Generate();
+    var secondBoard = NewPuzzleGenerator().Generate();
 
     var firstCells = firstBoard.Cells
       .Select(cell => (cell.RowIndex, cell.ColumnIndex, cell.Value, cell.IsFixed));
@@ -55,5 +57,10 @@ public class SudokuGeneratorTests
       .Select(cell => (cell.RowIndex, cell.ColumnIndex, cell.Value, cell.IsFixed));
 
     Assert.Equal(firstCells, secondCells);
+  }
+
+  private IPuzzleGenerator NewPuzzleGenerator()
+  {
+    return new SudokuGenerator(clueStrategy, new Random(42));
   }
 }

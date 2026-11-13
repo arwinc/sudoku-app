@@ -6,8 +6,8 @@ public class BoardRendererTests
   public void Render_WritesHeaderAndAllRowsInColumnOrder()
   {
     using var output = new StringWriter();
-    var board = new Board(Enumerable.Range(0, Board.Size)
-      .SelectMany(row => Enumerable.Range(0, Board.Size)
+    var board = new Board(Enumerable.Range(0, 9)
+      .SelectMany(row => Enumerable.Range(0, 9)
         .Select(column => new Cell(row, column, column + 1, true))));
     var renderer = new BoardRenderer(output);
 
@@ -16,11 +16,11 @@ public class BoardRendererTests
     string[] lines = output.ToString()
       .Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries);
 
-    Assert.Equal(Board.Size + 1, lines.Length);
+    Assert.Equal(9 + 1, lines.Length);
     Assert.StartsWith(" A ", lines[1]);
     Assert.EndsWith(" 9 ", lines[1]);
-    Assert.StartsWith(" I ", lines[Board.Size]);
-    Assert.EndsWith(" 9 ", lines[Board.Size]);
+    Assert.StartsWith(" I ", lines[9]);
+    Assert.EndsWith(" 9 ", lines[9]);
   }
 
   [Fact]

@@ -31,7 +31,7 @@ public class SudokuGameTests
   public void ProcessCellCommand_PlacesValue()
   {
     var cell = new Cell(0, 0, 5, false);
-    var game = new SudokuGame(new Board([cell]));
+    var game = new SudokuGame(BoardTests.CreateTestBoard9x9(cell));
 
     var result = game.ProcessCellCommand(
       new SudokuCommand(SudokuCommandType.PlaceValue, 0, 0, 7));
@@ -79,7 +79,7 @@ public class SudokuGameTests
   {
     var cell1 = new Cell(0, 0, 5, false);
     var cell2 = new Cell(1, 1, 6, false);
-    var game = new SudokuGame(new Board([cell1, cell2]));
+    var game = new SudokuGame(BoardTests.CreateTestBoard9x9(cell1, cell2));
 
     // Action : A1 1 » B2 2 » A1 3
     // History: A1 ø » B2 ø » A1 1
@@ -157,7 +157,7 @@ public class SudokuGameTests
   {
     var first = new Cell(0, 0, 4, false);
     var second = new Cell(0, 1, 9, false);
-    var board = new Board([first, second]);
+    var board = BoardTests.CreateTestBoard9x9(first, second);
     Assert.True(board.TryPlaceValue(first, 7));
     Assert.True(board.TryPlaceValue(second, 7));
     var game = new SudokuGame(board);
