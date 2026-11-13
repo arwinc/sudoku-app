@@ -75,11 +75,16 @@ public class Board
       var violation = CheckCell(cell);
       if (violation != ViolationCheck.None)
       {
-        return new BoardViolation(cell, violation);
+        int? gridSize = violation switch
+        {
+          ViolationCheck.SubgridViolation => BoxSize,
+          _ => null
+        };
+        return new BoardViolation(cell, violation, gridSize);
       }
     }
     return null;
   }
 
-  public sealed record BoardViolation(Cell cell, ViolationCheck type);
+  public sealed record BoardViolation(Cell cell, ViolationCheck type, int? gridSize = null);
 }

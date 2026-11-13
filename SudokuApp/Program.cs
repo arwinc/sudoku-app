@@ -88,7 +88,7 @@ void WriteCheckMessage(Board.BoardViolation? violation)
   {
     ViolationCheck.RowViolation => $"Number {cell.UserValue} already exists in Row {cell.RowLabel}.",
     ViolationCheck.ColumnViolation => $"Number {cell.UserValue} already exists in Column {cell.ColLabel}.",
-    ViolationCheck.SubgridViolation => $"Number {cell.UserValue} already exists in the same 3x3 subgrid.",
+    ViolationCheck.SubgridViolation => $"Number {cell.UserValue} already exists in the same {violation.gridSize}x{violation.gridSize} subgrid.",
     _ => "No rule violations detected."
   };
 
