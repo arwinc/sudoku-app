@@ -27,7 +27,7 @@ dotnet run --project SudokuApp.Check PuzzleGenerator 100
 
 The benchmark dynamically loads implementations from the core assembly. You can swap the generator class name argument to test different algorithms:
 * `PuzzleGenerator`: generates valid grids row-by-row.
-* `SudokuGenerator`: generates valid grids by populating diagonal 3x3 subgrids first.
+* `SudokuGenerator`: generates valid grids by populating diagonal subgrids first.
 
 ## Performance Testing
 
