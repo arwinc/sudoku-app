@@ -11,7 +11,7 @@ boardRenderer.Render(game.Board);
 string? input;
 do
 {
-  Console.WriteLine("\nEnter command (e.g., A3 4, C5 clear, hint, check, quit):");
+  Console.WriteLine("\nEnter command (e.g., A3 4, C5 clear, undo, hint, check, quit):");
   input = Console.ReadLine();
 
   if (input is null || !ProcessInput(input)) break;

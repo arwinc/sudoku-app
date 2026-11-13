@@ -44,6 +44,12 @@ public class SudokuCommandParserTests
     Assert.Null(command.Value);
   }
 
+  [Fact]
+  public void Parse_ReturnsUndoCommand()
+  {
+    Assert.Equal(SudokuCommandType.Undo, _sut.Parse("undo").Type);
+  }
+
   [Theory]
   [InlineData(null)]
   [InlineData("")]

@@ -7,8 +7,8 @@ public enum SudokuCommandType
   Hint,
   Check,
   PlaceValue,
-  Clear,
-  Undo
+  Undo,
+  Clear
 }
 
 public sealed record SudokuCommand(

@@ -48,21 +48,21 @@ public class SudokuGame
     }
 
     var cell = history.Pop().cell;
-    if (cell.HasUserValue)
+    try
     {
-      try
+      IsUndoAction = true;
+      if (cell.HasUserValue)
       {
-        IsUndoAction = true;
         ProcessCellCommand(SudokuCommand.Create(SudokuCommandType.PlaceValue, cell, cell.UserValue));
       }
-      finally
+      else
       {
-        IsUndoAction = false;
+        ProcessCellCommand(SudokuCommand.Create(SudokuCommandType.Clear, cell));
       }
     }
-    else
+    finally
     {
-      ProcessCellCommand(SudokuCommand.Create(SudokuCommandType.Clear, cell));
+      IsUndoAction = false;
     }
   }
 
@@ -86,9 +86,15 @@ public class SudokuGame
       return new CellCommandResult(CellCommandStatus.FixedCell, cell);
     }
 
+    var historyItem = new HistoryItem(cell.Clone());
+
     if (command.Type == SudokuCommandType.Clear)
     {
       cell.Clear();
+      if (!IsUndoAction)
+      {
+        history.Push(historyItem);
+      }
       return new CellCommandResult(CellCommandStatus.Accepted, cell);
     }
 
@@ -97,7 +103,6 @@ public class SudokuGame
       return new CellCommandResult(CellCommandStatus.InvalidCommand, cell);
     }
 
-    var historyItem = new HistoryItem(cell.Clone());
     if (!Board.TryPlaceValue(cell, value))
     {
       return new CellCommandResult(CellCommandStatus.InvalidValue, cell);

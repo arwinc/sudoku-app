@@ -1,6 +1,6 @@
 # Sudoku Command-Line Application & Test Suite
 
-An interactive, console-based 9x9 Sudoku game and comprehensive unit testing suite written in C# (.NET 10.0). The application enables players to generate Sudoku puzzles, interact via CLI commands, request hints, check for rule violations, and quit or replay upon completion.
+An interactive, console-based 9x9 Sudoku game and comprehensive unit testing suite written in C# (.NET 10.0). The application enables players to generate Sudoku puzzles, interact via CLI commands, request hints, check for rule violations, undo last commands, and quit or replay upon completion.
 
 ---
 
@@ -12,17 +12,17 @@ The solution (`Sudoku.slnx`) contains two projects:
 
 ### Core Application Components (`SudokuApp`)
 * **`Program.cs`**: Application entry point managing the game loop, input handling, board rendering, and replay prompts.
-* **`SudokuGame.cs`**: High-level game controller managing board state, processing user cell commands (`PlaceValue`, `Clear`), checking solution completion (`IsSolved`), and identifying hint cells.
+* **`SudokuGame.cs`**: High-level game controller managing board state, processing user cell commands (`PlaceValue`, `Clear`), undo last cell commands, checking solution completion (`IsSolved`), and identifying hint cells.
 * **`Board.cs` & `Cell.cs`**: Domain model for the 9x9 grid. Each `Cell` tracks row/column indices, solution digit (`Value`), pre-filled clue status (`IsFixed`), and player entry (`UserValue`). `Board` handles duplicate validation across rows, columns, and 3x3 subgrids.
 * **`SudokuGenerator.cs`**: Generates full valid Sudoku grids by populating diagonal 3x3 subgrids first, recursively solving remaining cells via backtracking (`FillRemaining`), and selecting pre-filled clue positions.
-* **`SudokuCommandParser.cs`**: Uses regular expressions to parse CLI commands into strongly typed `SudokuCommand` records (`PlaceValue`, `Clear`, `Hint`, `Check`, `Quit`, `Invalid`).
+* **`SudokuCommandParser.cs`**: Uses regular expressions to parse CLI commands into strongly typed `SudokuCommand` records (`PlaceValue`, `Clear`, `Undo`, `Hint`, `Check`, `Quit`, `Invalid`).
 * **`PuzzleGenerator.cs`**: Original code to generate full valid Sudoku grids row-by-row using row backtracking, but is non-deterministic.
 * **`BoardRenderer.cs`**: ASCII console renderer displaying a formatted 9x9 grid with ANSI color formatting for user-entered digits.
 
 ### Unit Test Project (`SudokuApp.Tests`)
 * **`CellTests.cs`**: Validates cell state mutations (`TrySetUserValue`), fixed vs. editable logic, value clearing, and out-of-range bounds checks.
 * **`BoardTests.cs`**: Tests value placement rules, violation detection for rows, columns, and subgrids (`CheckCell`), board-wide validation (`CheckBoard`), and completion detection (`IsSolved`).
-* **`SudokuGameTests.cs`**: Tests hint retrieval logic (`GetHintCell`), cell command processing (`ProcessCellCommand`), and board violation reporting.
+* **`SudokuGameTests.cs`**: Tests hint retrieval logic (`GetHintCell`), cell command processing (`ProcessCellCommand`), undo command, and board violation reporting.
 * **`SudokuGeneratorTests.cs`**: Verifies generation constraints (81 cells total, exactly 30 pre-filled fixed cells), solution validity across all rows/cols/boxes, and reproducibility via random seed initialization.
 * **`PuzzleGeneratorTests.cs`**: Verifies generation of the original `PuzzleGenerator` code.
 * **`SudokuCommandParserTests.cs`**: Validates parsing for `quit`, `hint`, `check`, coordinate conversion (e.g., `B3 7` -> row 1, col 2, value 7), `clear`, and malformed/invalid inputs.
@@ -100,6 +100,7 @@ dotnet test
 | :--- | :--- | :--- |
 | `[Row][Col] [Digit]` | `A3 4` | Places digit `4` in Row `A`, Column `3`. |
 | `[Row][Col] clear` | `C5 clear` | Clears user-entered digit in Row `C`, Column `5`. |
+| `undo` | `undo` | Revert last place value and clear cell. |
 | `hint` | `hint` | Reveals the solution value for a random unresolved cell. |
 | `check` | `check` | Scans the board and reports the **first rule violation found** (evaluates all user entries in grid order, not just the most recent move). |
 | `quit` | `quit` | Exits the game. |
@@ -123,7 +124,7 @@ Here is your puzzle:
   H _ _ _ 4 1 9 _ _ 5
   I _ _ _ _ 8 _ _ 7 9
 
-Enter command (e.g., A3 4, C5 clear, hint, check, quit):
+Enter command (e.g., A3 4, C5 clear, undo, hint, check, quit):
 A3 4
 
 Move accepted.
