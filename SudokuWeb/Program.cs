@@ -15,15 +15,24 @@ var entryPoint = typeof(SudokuApp::Program).GetMethod(
   BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public
 );
 
-var result = entryPoint?.Invoke(null, [ Array.Empty<string>() ]);
-
-if (result is Task task)
+var result = entryPoint?.Invoke(null, [Array.Empty<string>()]);
+try
 {
-  await task;
-}
+  if (result is Task task)
+  {
+    await task;
+  }
 
-Console.WriteLine("\n[Session ended]");
-Program.OnProgramExited();
+  Console.WriteLine("\n[Session ended]");
+}
+catch (Exception ex)
+{
+  Console.WriteLine($"\n\x1b[31m[Unhandled Error] {ex.GetType().Name}: {ex.Message}\x1b[0m");
+}
+finally
+{
+  Program.OnProgramExited();
+}
 
 partial class Program
 {
