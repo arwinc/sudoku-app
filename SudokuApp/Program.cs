@@ -4,7 +4,7 @@ BoardRenderer boardRenderer = new();
 
 Console.WriteLine("Welcome to Sudoku");
 Console.Write("Select grid size — 4 (4x4) or 9 (9x9) [Default: 9]: ");
-string? startupInput = Console.ReadLine();
+string? startupInput = await ConsoleReader.ReadLineAsync();
 int chosenSize = "4".Equals(startupInput?.Trim(), StringComparison.Ordinal) ? 4 : 9;
 InitBoard(chosenSize);
 boardRenderer.Render(game.Board);
@@ -14,7 +14,7 @@ do
 {
   Console.WriteLine("\nEnter command (e.g., A3 4, C5 clear, undo, hint, check, quit):");
   Console.WriteLine("Or start new game (e.g., new, new 4, new 9):");
-  input = Console.ReadLine();
+  input = await ConsoleReader.ReadLineAsync();
 
   if (input is null || !ProcessInput(input)) break;
 
@@ -25,7 +25,7 @@ do
   {
     Console.WriteLine("\nYou have successfully completed the Sudoku puzzle!");
     Console.WriteLine("Press any key to play again...");
-    Console.ReadKey();
+    await ConsoleReader.ReadLineAsync();
 
     InitBoard(chosenSize);
     boardRenderer.Render(game.Board);
