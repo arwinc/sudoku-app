@@ -1,5 +1,9 @@
 # Sudoku Command-Line Application & Test Suite
 
+[![Build, Test, and Deploy](https://github.com/arwinc/sudoku-app/actions/workflows/deploy.yml/badge.svg)](https://github.com/arwinc/sudoku-app/actions/workflows/deploy.yml)
+[![Play online](https://img.shields.io/badge/%E2%96%B6_Play-2ea44f?style=flat)](https://arwinc.github.io/sudoku-app/)
+
+
 An interactive, console-based Sudoku game supporting both 4x4 and 9x9 grid sizes, comprehensive unit testing suite, and generator performance benchmarking tool written in C# (.NET 10.0). The application enables players to generate Sudoku puzzles, interact via CLI commands, request hints, check for rule violations, undo last commands, and quit or replay upon completion.
 
 ---
