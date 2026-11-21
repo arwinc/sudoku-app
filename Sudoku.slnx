@@ -2,4 +2,5 @@
   <Project Path="SudokuApp/SudokuApp.csproj" />
   <Project Path="SudokuApp.Check/SudokuApp.Check.csproj" />
   <Project Path="SudokuApp.Tests/SudokuApp.Tests.csproj" />
+  <Project Path="SudokuWeb/SudokuWeb.csproj" />
 </Solution>
