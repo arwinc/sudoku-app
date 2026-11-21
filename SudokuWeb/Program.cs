@@ -1,55 +1,52 @@
+extern alias SudokuApp;
+
 using System;
-using System.Diagnostics;
+using System.IO;
+using System.Reflection;
 using System.Runtime.InteropServices.JavaScript;
+using System.Text;
 using System.Threading.Tasks;
 
-Console.WriteLine("Hello, Browser!");
+Console.SetOut(new DomTextWriter());
+SudokuApp::ConsoleReader.ReadLineHandler = () => Program.ReadLineAsync();
 
-if (args.Length == 1 && args[0] == "start")
-  StopwatchSample.Start();
+var entryPoint = typeof(SudokuApp::Program).GetMethod(
+  "<Main>$",
+  BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public
+);
 
-while (true)
+var result = entryPoint?.Invoke(null, [ Array.Empty<string>() ]);
+
+if (result is Task task)
 {
-  StopwatchSample.Render();
-  await Task.Delay(1000);
+  await task;
 }
 
-partial class StopwatchSample
+Console.WriteLine("\n[Session ended]");
+Program.OnProgramExited();
+
+partial class Program
 {
-  private static Stopwatch stopwatch = new();
+  [JSImport("dom.appendOutput", "main.js")]
+  internal static partial void AppendOutput(string text);
 
-  public static void Start() => stopwatch.Start();
-  public static void Render() => SetInnerText("#time", stopwatch.Elapsed.ToString(@"mm\:ss"));
+  [JSImport("dom.readLineAsync", "main.js")]
+  // Hook up browser input before running your console app
+  internal static partial Task<string?> ReadLineAsync();
 
-  [JSImport("dom.setInnerText", "main.js")]
-  internal static partial void SetInnerText(string selector, string content);
+  [JSImport("dom.onExit", "main.js")]
+  internal static partial void OnProgramExited();
+}
 
-  [JSExport]
-  internal static bool Toggle()
+class DomTextWriter : TextWriter
+{
+  public override Encoding Encoding => Encoding.UTF8;
+  public override void Write(char value) => Program.AppendOutput(value.ToString());
+  public override void Write(char[] buffer, int index, int count) => Program.AppendOutput(new string(buffer, index, count));
+  public override void Write(string? value)
   {
-    if (stopwatch.IsRunning)
-    {
-      stopwatch.Stop();
-      return false;
-    }
-    else
-    {
-      stopwatch.Start();
-      return true;
-    }
+    if (value != null) Program.AppendOutput(value);
   }
-
-  [JSExport]
-  internal static void Reset()
-  {
-    if (stopwatch.IsRunning)
-      stopwatch.Restart();
-    else
-      stopwatch.Reset();
-
-    Render();
-  }
-
-  [JSExport]
-  internal static bool IsRunning() => stopwatch.IsRunning;
+  public override void WriteLine() => Program.AppendOutput("\n");
+  public override void WriteLine(string? value) => Program.AppendOutput((value ?? "") + "\n");
 }
