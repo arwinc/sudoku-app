@@ -3,6 +3,10 @@ name: Build, Test, and Deploy to GitHub Pages
 on:
   push:
     branches: [ main ]
+    paths-ignore:
+      - '**.md'
+      - '.gitignore'
+      - '.gitattributes'
   workflow_dispatch:
 
 permissions:
