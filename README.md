@@ -46,18 +46,22 @@ The solution (`Sudoku.slnx`) contains three projects:
 
 ## Alternative Puzzle generator strategy
 
-Modify code inside `Program.cs` to switch puzzle generator.
+Modify code inside `Program.cs` to switch puzzle generator between 2 strategies:
+- `PuzzleGenerator` *(Default)*: fill row-by-row combined with backtracking
+- `SudokuGenerator`: fill diagonal subgrid first combined with backtracking
+
+> `PuzzleGenerator` generates board slightly faster, though overall speed isn't guaranteed since both generators must find a unique solution.
 
 Before:
 
 ```csharp
-IPuzzleGenerator puzzleGenerator = new SudokuGenerator();
+IPuzzleGenerator puzzleGenerator = new PuzzleGenerator();
 ```
 
 After:
 
 ```csharp
-IPuzzleGenerator puzzleGenerator = new PuzzleGenerator();
+IPuzzleGenerator puzzleGenerator = new SudokuGenerator();
 ```
 
 ---
